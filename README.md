@@ -15,9 +15,15 @@ MALGPL is influenced by the **Fortran** programming language. Cyril wrote, “Fo
 Here’s a simple program to print “Hello, World!” written in MALGPL programming language:
 
 ```basic
+WRITE("Hello, World!")
+```
+
+and 
+
+```basic
 BEGIN
     COMMENT “Hello, World!” program
-    WRITE(“Hello, World!”)
+    WRITE("Hello, World!")
 END
 ```
 
