@@ -1,0 +1,16 @@
+BEGIN
+    COMMENT "Addition"
+    WRITENUM(10 + 10)
+    
+    COMMENT "Subtraction"
+    WRITENUM(24 - 8)
+    
+    COMMENT "Multiplication"
+    WRITENUM(25 * 24)
+    
+    COMMENT "Division"
+    WRITENUM(121 / 11)
+
+    COMMENT "Power"
+    WRITENUM(49 ^ 0.5)
+END
