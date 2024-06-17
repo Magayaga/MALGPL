@@ -1,7 +1,7 @@
-! 
+!
 ! MALGPL - MAGAYAGAIAN ALGORITHMIC PROGRAMMING LANGUAGE
 ! It was originally written in the Fortran programming language
-! Copyright (c) 2024 Cyril John Magayaga (cjmagayaga957@gmail.com, cyrilmagayaga@proton.me)
+! Copyright (c) 2024 Cyril John Magayaga (cjmagayaga957@gmail.com)
 !
 program malgpl
     implicit none
@@ -60,15 +60,19 @@ program malgpl
         if (index(adjustl(line), 'WRITE(') == 1) then
             call handle_write(line)
         endif
+
+        ! Handle the WRITENUM keyword
+        if (index(adjustl(line), 'WRITENUM(') == 1) then
+            call handle_writenum(line)
+        endif
     end do
 
     close(10)
 contains
     subroutine handle_write(line)
         character(len=1024), intent(in) :: line
-        character(len=1024) :: message, expression
-        integer :: start_pos, end_pos, start_text, end_text, value
-        real :: result
+        character(len=1024) :: message
+        integer :: start_text, end_text
 
         ! Find the start and end of the argument within parentheses
         start_text = index(line, 'WRITE(') + len('WRITE(')
@@ -76,10 +80,6 @@ contains
         if (line(end_text:end_text) == ')') then
             end_text = end_text - 1
         endif
-
-        ! Find the start and end of the expression within parentheses
-        start_pos = index(line, 'WRITE(') + len('WRITE(')
-        end_pos = index(line(start_pos:), ')') + start_pos - 1
 
         ! Extract the argument
         message = adjustl(line(start_text:end_text))
@@ -101,80 +101,95 @@ contains
             ! It's a text
             message = message(2:len_trim(message)-1)
             print *, trim(message)
-        else if (start_pos > 0 .and. end_pos > start_pos) then
-            ! It's a expression
-            expression = line(start_pos:end_pos-1)
-            call evaluate_expression(trim(adjustl(expression)), result, value)
-            if (value == 0) then
-                print *, result
-            else
-                print *, 'Syntax error in expression: ', trim(adjustl(expression))
-            endif
-        else
-            print *, 'Syntax error: Expected WRITE(<expression>).'
         endif
     end subroutine handle_write
 
-    subroutine evaluate_expression(expr, result, ios)
-        character(len=1024), intent(in) :: expr
-        real, intent(out) :: result
-        integer, intent(out) :: ios
-        character(len=1024) :: left_operand, right_operand
-        integer :: op_pos
+    subroutine handle_writenum(line)
+        character(len=1024), intent(in) :: line
+        character(len=1024) :: expression
+        integer :: start_text, end_text
+        real :: result
 
-        ios = 0  ! Default to no error
-        result = 0.0  ! Initialize result
+        ! Find the start and end of the argument within parentheses
+        start_text = index(line, 'WRITENUM(') + len('WRITENUM(')
+        end_text = len_trim(line)
+        if (line(end_text:end_text) == ')') then
+            end_text = end_text - 1
+        endif
 
-        ! Detect and evaluate basic operations
-        op_pos = index(expr, '+')
-        if (op_pos > 0) then
-            ! Addition
-            left_operand = expr(1:op_pos-1)
-            right_operand = expr(op_pos+1:)
-            result = real(read_integer(trim(left_operand))) + real(read_integer(trim(right_operand)))
+        ! Extract the argument
+        expression = adjustl(line(start_text:end_text))
+
+        ! Evaluate the expression
+        result = evaluate_expression(expression)
+        print *, result
+    end subroutine handle_writenum
+
+    recursive function evaluate_expression(expr) result(res)
+        character(len=*), intent(in) :: expr
+        real :: res
+        character(len=1024) :: left_expr, right_expr
+        integer :: pos
+        real :: left_val, right_val
+
+        ! Remove any surrounding parentheses
+        if (expr(1:1) == '(' .and. expr(len_trim(expr):len_trim(expr)) == ')') then
+            res = evaluate_expression(expr(2:len_trim(expr)-1))
             return
         endif
 
-        op_pos = index(expr, '-')
-        if (op_pos > 0) then
-            ! Subtraction
-            left_operand = expr(1:op_pos-1)
-            right_operand = expr(op_pos+1:)
-            result = real(read_integer(trim(left_operand))) - real(read_integer(trim(right_operand)))
+        ! Find the position of the operator
+        pos = index(expr, '+')
+        if (pos /= 0) then
+            left_expr = adjustl(expr(1:pos-1))
+            right_expr = adjustl(expr(pos+1:))
+            left_val = evaluate_expression(left_expr)
+            right_val = evaluate_expression(right_expr)
+            res = left_val + right_val
             return
         endif
 
-        op_pos = index(expr, '*')
-        if (op_pos > 0) then
-            ! Multiplication
-            left_operand = expr(1:op_pos-1)
-            right_operand = expr(op_pos+1:)
-            result = real(read_integer(trim(left_operand))) * real(read_integer(trim(right_operand)))
+        pos = index(expr, '-')
+        if (pos /= 0) then
+            left_expr = adjustl(expr(1:pos-1))
+            right_expr = adjustl(expr(pos+1:))
+            left_val = evaluate_expression(left_expr)
+            right_val = evaluate_expression(right_expr)
+            res = left_val - right_val
             return
         endif
 
-        op_pos = index(expr, '/')
-        if (op_pos > 0) then
-            ! Division
-            left_operand = expr(1:op_pos-1)
-            right_operand = expr(op_pos+1:)
-            result = real(read_integer(trim(left_operand))) / real(read_integer(trim(right_operand)))
+        pos = index(expr, '*')
+        if (pos /= 0) then
+            left_expr = adjustl(expr(1:pos-1))
+            right_expr = adjustl(expr(pos+1:))
+            left_val = evaluate_expression(left_expr)
+            right_val = evaluate_expression(right_expr)
+            res = left_val * right_val
             return
         endif
 
-        ! If no operator is found
-        ios = 1
-    end subroutine evaluate_expression
-
-    integer function read_integer(str)
-        character(len=1024), intent(in) :: str
-        integer :: num, ios
-
-        read(str, *, iostat=ios) num
-        if (ios /= 0) then
-            num = 0
+        pos = index(expr, '/')
+        if (pos /= 0) then
+            left_expr = adjustl(expr(1:pos-1))
+            right_expr = adjustl(expr(pos+1:))
+            left_val = evaluate_expression(left_expr)
+            right_val = evaluate_expression(right_expr)
+            res = left_val / right_val
+            return
         endif
 
-        read_integer = num
-    end function read_integer
+        pos = index(expr, '^')
+        if (pos /= 0) then
+            left_expr = adjustl(expr(1:pos-1))
+            right_expr = adjustl(expr(pos+1:))
+            left_val = evaluate_expression(left_expr)
+            right_val = evaluate_expression(right_expr)
+            res = left_val ** right_val
+            return
+        endif
+
+        ! If no operator is found, convert the expression to a number
+        read(expr, *) res
+    end function evaluate_expression
 end program malgpl
