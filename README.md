@@ -32,9 +32,34 @@ It is similar to the “Hello, World!” program written in ALGOL 60 programming
 ```basic
 BEGIN
     COMMENT “Hello, World!” program
-    WRITE(“Hello, World!”)
+    WRITE("Hello, World!")
 END
 ```
+### Arithmetic expressions
+Here’s a simple program to print arithmetic expressions written in MALGPL programming language:
+
+```basic
+WRITENUM(9 + 12)
+WRITENUM(4 - 6)
+WRITENUM(12 * 3)
+WRITENUM(10 / 4)
+WRITENUM(4 ^ 3)
+```
+
+and 
+
+```basic
+BEGIN
+    COMMENT Arithmetic expressions like addition, subtraction, multiplication, division, and power.
+    WRITENUM(9 + 12)
+    WRITENUM(4 - 6)
+    WRITENUM(12 * 3)
+    WRITENUM(10 / 4)
+    WRITENUM(4 ^ 3)
+END
+```
+
+`WRITENUM` can be numbers and arithmetic expressions and `WRITE` can be messages and texts.
 
 ## Copyright
 
