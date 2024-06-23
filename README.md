@@ -35,6 +35,24 @@ BEGIN
     WRITE("Hello, World!")
 END
 ```
+
+### Comments
+`COMMENT` can be used to explain MALGPL code, and to make it more readable.
+
+```basic
+COMMENT This is the comment
+COMMENT "This is the comment!"
+```
+
+and
+
+```basic
+BEGIN
+    COMMENT This is the comment
+    COMMENT "This is the comment!"
+END
+```
+
 ### Arithmetic expressions
 `WRITENUM` can be numbers and arithmetic expressions and `WRITE` can be messages and texts.
 
