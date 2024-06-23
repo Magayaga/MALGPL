@@ -59,7 +59,7 @@ BEGIN
 END
 ```
 
-`WRITENUM` can be numbers and arithmetic expressions and `WRITE` can be messages and texts.
+**Notes:** `WRITENUM` can be numbers and arithmetic expressions and `WRITE` can be messages and texts.
 
 ## Copyright
 
