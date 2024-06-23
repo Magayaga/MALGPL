@@ -36,6 +36,8 @@ BEGIN
 END
 ```
 ### Arithmetic expressions
+`WRITENUM` can be numbers and arithmetic expressions and `WRITE` can be messages and texts.
+
 Here’s a simple program to print arithmetic expressions written in MALGPL programming language:
 
 ```basic
@@ -59,7 +61,34 @@ BEGIN
 END
 ```
 
-**Notes:** `WRITENUM` can be numbers and arithmetic expressions and `WRITE` can be messages and texts.
+### Variables
+
+MALGPL Variables can be a `VAR` keyword that can be changed or modified like numbers and messages.
+
+```basic
+VAR name := "Hello, World!"
+WRITE(\name)
+
+VAR number := 9 + 4
+VAR 6 := 12 + 3
+WRITENUM(\number)
+WRITENUM(\6)
+```
+and
+
+```basic
+BEGIN
+    COMMENT Var to the Write
+    VAR name := "Hello, World!"
+    WRITE(\name)
+
+    COMMENT Var to the Writenum
+    VAR number := 9 + 4
+    VAR 6 := 12 + 3
+    WRITENUM(\number)
+    WRITENUM(\6)
+END
+```
 
 ## Copyright
 
