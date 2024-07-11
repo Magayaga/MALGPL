@@ -10,6 +10,20 @@
 
 MALGPL is influenced by the **Fortran** programming language. Cyril wrote, “Fortran is the world’s first high-level programming language but it is the longest whole life of programming.” It was written in **Fortran 90** and **C** programming languages.
 
+## Keywords
+
+### Keywords written in `Fortran 90`
+
+| `WRITE` | `WRITENUM` | `VAR` | `COMMENT` | `BEGIN` | `END` |
+|:-------:|:----------:|:-----:|:---------:|:-------:|:-----:|
+
+### Keywords written in `C`
+
+| `PRINT` | `PRINTLN` | `INPUT` | `INPUTLN` | `ERROR` | `ERRORLN` |
+|:-------:|:---------:|:-------:|:---------:|:-------:|:---------:|
+
+## Examples
+
 ### "Hello, World!" program
 
 Here’s a simple program to print “Hello, World!” written in MALGPL programming language:
