@@ -8,7 +8,7 @@
 
 **MALGPL**, short for the **Magayagaian Algorithmic Programming Language** is an imperative, reflective, generic, array, and meta-programming language.  It was designed and developed by [Cyril John Magayaga](https://github.com/magayaga), best known as the original author and developer of the **Hyzero**, **Xenly**, **BINPL**, and **LibreBASIC** programming languages.
 
-MALGPL is influenced by the **Fortran** programming language. Cyril wrote, “Fortran is the world’s first high-level programming language but it is the longest whole life of programming.”
+MALGPL is influenced by the **Fortran** programming language. Cyril wrote, “Fortran is the world’s first high-level programming language but it is the longest whole life of programming.” It was written in **Fortran 90** and **C** programming languages.
 
 ### "Hello, World!" program
 
