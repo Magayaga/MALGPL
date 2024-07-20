@@ -1,6 +1,6 @@
 /*
  * MALGPL - MAGAYAGAIAN ALGORITHMIC PROGRAMMING LANGUAGE
- * It was originally written in the Fortran programming language
+ * It was originally written in the C programming language
  * Copyright (c) 2024 Cyril John Magayaga (cjmagayaga957@gmail.com)
  */
 #include <stdio.h>
