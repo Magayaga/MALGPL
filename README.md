@@ -22,6 +22,15 @@ MALGPL is influenced by the **Fortran** programming language. Cyril wrote, “Fo
 | `PRINT` | `PRINTLN` | `INPUT` | `INPUTLN` | `ERROR` | `ERRORLN` |
 |:-------:|:---------:|:-------:|:---------:|:-------:|:---------:|
 
+### Keywords with `Scala`
+
+| `OBJECT` | `FOR` | `WHILE` |
+|:--------:|:-----:|:-------:|
+
+### Keywords with `Python`
+| `IF` | `ELIF` | `ELSE` |
+|:----:|:------:|:------:|
+
 ## Examples
 
 ### "Hello, World!" program
