@@ -1,4 +1,4 @@
 BEGIN
     COMMENT “Hello, World!” program
-    WRITE(“Hello, World!”)
+    WRITE("Hello, World!")
 END

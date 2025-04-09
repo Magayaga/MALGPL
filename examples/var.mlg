@@ -1,6 +1,6 @@
 BEGIN
     COMMENT Var to the Write
-    VAR name := "Hello, World!"
+    LET name := "Hello, World!"
     WRITE(\name)
 
     COMMENT Var to the Writenum

@@ -2,7 +2,7 @@ BEGIN
     COMMENT sum
     VAR sum := 0
     FOR I := 1 TO 20
-        sum := sum + I
+        VARL sum := sum + I
     NEXT I
     WRITENUM(\sum)
 END
