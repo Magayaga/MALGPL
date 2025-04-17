@@ -17,7 +17,7 @@ program malgpl
 
     ! Check command-line arguments
     if (command_argument_count() /= 1) then
-        print *, 'Usage: ./malgpl <filename>'
+        print *, 'Usage: malgpl <filename>'
         stop
     endif
 
@@ -313,30 +313,49 @@ contains
     end subroutine handle_writenum
 
     subroutine handle_for(line)
-        character(len=1024), intent(in) :: line
+        character(len=*), intent(in) :: line
         character(len=32) :: loop_var
-        integer :: start_val, end_val, eq_pos1, eq_pos2
-
-        ! Extract loop variable and range
-        eq_pos1 = index(line, ':=')
-        eq_pos2 = index(line, 'TO')
-
-        if (eq_pos1 == 0 .or. eq_pos2 == 0) then
-            print *, 'Error: Invalid FOR syntax. Missing ":=" or "TO".'
+        integer :: eq1, eq2, start_val, end_val, i, ios
+    
+        ! Find “:=” and “TO”
+        eq1 = index(line, ':=')            ! position of “:=”
+        eq2 = index(line, 'TO')            ! position of “TO”
+        if (eq1 == 0 .or. eq2 == 0) then
+            print *, 'Error: Invalid FOR syntax. Expected “VAR := start TO end”.'
             return
         endif
-
-        loop_var = adjustl(line(5:eq_pos1-1))
-        read(line(eq_pos1+2:eq_pos2-1), *) start_val
-        read(line(eq_pos2+2:len_trim(line)), *) end_val
-
-        ! Set up the loop
-        do while (start_val <= end_val)
-            call execute_loop_body(loop_var, start_val)
-            start_val = start_val + 1
+    
+        ! Extract loop variable name (between “FOR ” and “:=”)
+        loop_var = adjustl( line(5:eq1-1) )
+        if (len_trim(loop_var) == 0) then
+            print *, 'Error: Missing loop variable.'
+            return
+        endif
+    
+        ! Read start and end values
+        read(line(eq1+2:eq2-1), *, iostat=ios) start_val
+        if (ios /= 0) then
+            print *, 'Error: Invalid start value in FOR loop.'
+            return
+        endif
+        read(line(eq2+2:len_trim(line)), *, iostat=ios) end_val
+        if (ios /= 0) then
+            print *, 'Error: Invalid end value in FOR loop.'
+            return
+        endif
+    
+        ! Initialize loop variable once
+        call update_variable(trim(loop_var), trim(adjustl(to_string(start_val))))
+    
+        ! Now actually iterate and update on each pass
+        do i = start_val, end_val
+            ! sum = sum + i  → update_variable handles converting to string
+            call update_variable(trim(loop_var), &
+                 trim(adjustl(to_string(i))))
+            ! here you could also invoke other body handlers if needed
         end do
     end subroutine handle_for
-
+    
     ! Subroutine to handle NEXT
     subroutine handle_next(line)
         character(len=1024), intent(in) :: line
@@ -372,23 +391,27 @@ contains
 
     ! Subroutine to handle VARL (local variable update)
     subroutine handle_varl(line)
-        character(len=1024), intent(in) :: line
-        character(len=32) :: var_name
+        character(len=*), intent(in) :: line
+        character(len=32)   :: var_name
         character(len=1024) :: var_value
-        integer :: eq_pos
-
+        integer             :: eq_pos
+    
         eq_pos = index(line, ':=')
         if (eq_pos == 0) then
-            print *, 'Error: Invalid VARL syntax. Missing ":=".'
+            print *, 'Error: Invalid VARL. Missing ":=".'
             return
         endif
-
-        var_name = adjustl(line(6:eq_pos-1))
+    
+        var_name  = adjustl(line(6:eq_pos-1))
         var_value = adjustl(line(eq_pos+2:len_trim(line)))
-
-        ! Update the variable locally
-        call update_variable(var_name, var_value)
-    end subroutine handle_varl
+        if (len_trim(var_name) == 0) then
+            print *, 'Error: VARL variable name cannot be empty.'
+            return
+        endif
+    
+        ! Simply overwrite the existing variable
+        call update_variable(trim(var_name), trim(var_value))
+    end subroutine handle_varl        
 
     ! Subroutine to update a variable
     subroutine update_variable(var_name, var_value)
