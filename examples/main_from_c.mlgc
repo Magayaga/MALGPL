@@ -1,0 +1,10 @@
+BEGIN
+    CONST Result := 3 * 3
+    PRINT("Hello, World!")
+    PRINT(Result)
+    COMMENT Result means Output is 3
+    PRINT(\Result)
+    COMMENT \Result Output is 3 * 3
+    PRINT($Result)
+    COMMENT $Result Output is 9
+END
