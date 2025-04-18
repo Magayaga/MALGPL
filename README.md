@@ -10,6 +10,13 @@
 
 MALGPL is influenced by the **Fortran** programming language. Cyril wrote, “Fortran is the world’s first high-level programming language but it is the longest whole life of programming.” It was written in **Fortran 90** and **C** programming languages.
 
+## Filename extensions
+
+| Filename extensions | Definition |
+|:-:|:-:|
+| `.mlg` | MALGPL's filename written in the Fortran programming language |
+| `.mlgc` | MALGPL's filename written in the C programming language |
+
 ## Keywords
 
 ### Keywords written in `Fortran 90`
