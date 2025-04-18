@@ -21,20 +21,22 @@ MALGPL is influenced by the **Fortran** programming language. Cyril wrote, “Fo
 
 ### Keywords written in `Fortran 90`
 
-| `WRITE` | `WRITENUM` | `VAR` | `COMMENT` | `BEGIN` | `END` |
-|:-------:|:----------:|:-----:|:---------:|:-------:|:-----:|
+| `WRITE` | `WRITENUM` | `VAR` | `COMMENT` | `BEGIN` | `END` | `FOR` | `NEXT` | `VARL` | `LET` |
+|:-------:|:----------:|:-----:|:---------:|:-------:|:-----:|:-----:|:------:|:------:|:-----:|
 
 ### Keywords written in `C`
 
-| `PRINT` | `PRINTLN` | `INPUT` | `INPUTLN` | `ERROR` | `ERRORLN` |
-|:-------:|:---------:|:-------:|:---------:|:-------:|:---------:|
+| `PRINT` | `PRINTLN` | `INPUT` | `INPUTLN` | `ERROR` | `ERRORLN` | `CONST` | `BEGIN` |
+|:-------:|:---------:|:-------:|:---------:|:-------:|:---------:|:-------:|:-------:|
+| **`END`** | **
 
-### Keywords with `Scala`
+
+### Keywords with `Scala` (written in `C`)
 
 | `OBJECT` | `FOR` | `WHILE` |
 |:--------:|:-----:|:-------:|
 
-### Keywords with `Python`
+### Keywords with `Python` (written in `C`)
 | `IF` | `ELIF` | `ELSE` |
 |:----:|:------:|:------:|
 
