@@ -8,11 +8,21 @@
 
 typedef struct {
     char name[32];
+    char *body;
+} Procedure;
+
+Procedure *procs = NULL;
+int proc_count = 0;
+
+typedef struct {
+    char name[32];
     char value[LINE_BUF];
 } Variable;
 
 Variable *vars = NULL;
 int vars_count = 0;
+
+void update_variable(const char *name, const char *value);
 
 // Utility: trim whitespace
 char *ltrim(char *s) { while (isspace((unsigned char)*s)) s++; return s; }
@@ -177,24 +187,117 @@ void handle_print(char *line) {
 }
 
 // FOR / NEXT
-void handle_for(char *line) {
-    char var[32]; int start, endv;
-    if (sscanf(line+3, "%31s := %d TO %d", var, &start, &endv) != 3) {
-        fprintf(stderr, "Error: Invalid FOR syntax.\n"); return;
+// FOR/NEXT handling
+void handle_for(FILE *fp, char *line) {
+    char var[32];
+    int start, endv;
+    if (sscanf(line + 4, "%31s TO %d", var, &endv) != 2) {
+        fprintf(stderr, "Error: Invalid FOR syntax.\n");
+        return;
     }
-    extern void update_variable(const char *, const char *);
-    update_variable(var, to_string(start));
-    for (int i = start; i <= endv; i++) {
+
+    int idx = find_variable_index(var);
+    if (idx < 0) {
+        fprintf(stderr, "Error: Variable '%s' not found for FOR loop.\n", var);
+        return;
+    }
+
+    int start_val = atoi(vars[idx].value);
+
+    // Save current file position to loop back
+    long loop_start = ftell(fp);
+
+    for (int i = start_val; i <= endv; i++) {
         update_variable(var, to_string(i));
+
+        // Go back to the start of loop body
+        fseek(fp, loop_start, SEEK_SET);
+
+        char rawline[LINE_BUF];
+        while (fgets(rawline, LINE_BUF, fp)) {
+            char *inner_line = trim(rawline);
+
+            if (strncmp(inner_line, "NEXT", 4) == 0) {
+                break; // end of FOR block
+            }
+
+            if (strncmp(inner_line, "PRINT(", 6) == 0) {
+                handle_print(inner_line);
+            }
+            // If you have more commands inside FOR, handle them here too.
+        }
+    }
+
+    // After loop, scan till NEXT to move file pointer correctly
+    char rawline[LINE_BUF];
+    while (fgets(rawline, LINE_BUF, fp)) {
+        char *inner_line = trim(rawline);
+        if (strncmp(inner_line, "NEXT", 4) == 0) {
+            break;
+        }
     }
 }
-void handle_next(char *line) { /* no-op */ }
 
 // Update for PRINT/loops
 void update_variable(const char *name, const char *value) {
     int idx = find_variable_index(name);
     if (idx < 0) { fprintf(stderr, "Error: Constant '%s' not defined.\n", name); return; }
     strncpy(vars[idx].value, value, LINE_BUF);
+}
+
+void handle_procedure(FILE *fp, char *line) {
+    char proc_name[32];
+    if (sscanf(line + 9, "%31s", proc_name) != 1) {
+        fprintf(stderr, "Error: Invalid PROCEDURE syntax.\n");
+        return;
+    }
+
+    procs = realloc(procs, (proc_count + 1) * sizeof(Procedure));
+    strncpy(procs[proc_count].name, proc_name, sizeof(procs[0].name));
+    procs[proc_count].body = NULL;
+
+    // Capture the body lines until "END"
+    size_t body_size = 0;
+    char rawline[LINE_BUF];
+    while (fgets(rawline, LINE_BUF, fp)) {
+        char *inner = trim(rawline);
+        if (strncmp(inner, "END", 3) == 0) break;
+
+        size_t len = strlen(inner);
+        procs[proc_count].body = realloc(procs[proc_count].body, body_size + len + 2);
+        memcpy(procs[proc_count].body + body_size, inner, len);
+        procs[proc_count].body[body_size + len] = '\n';
+        procs[proc_count].body[body_size + len + 1] = '\0';
+        body_size += len + 1;
+    }
+    proc_count++;
+}
+
+void execute_procedure(const char *name) {
+    for (int i = 0; i < proc_count; i++) {
+        if (strcmp(procs[i].name, name) == 0) {
+            // Simulate reading the stored body line-by-line
+            char *body = strdup(procs[i].body);
+            char *line = strtok(body, "\n");
+            while (line) {
+                char *inner_line = trim(line);
+                if (strncmp(inner_line, "PRINT(", 6) == 0) {
+                    handle_print(inner_line);
+                } else if (strncmp(inner_line, "ECHO ", 5) == 0) {
+                    printf("%s\n", inner_line + 5);
+                }
+                // You can add more commands inside PROCEDURE here
+                line = strtok(NULL, "\n");
+            }
+            free(body);
+            return;
+        }
+    }
+    fprintf(stderr, "Error: Undefined PROCEDURE '%s'.\n", name);
+}
+
+void handle_echo(char *line) {
+    printf("%s\n", line + 5);
 }
 
 int main(int argc, char *argv[]) {
@@ -211,8 +314,17 @@ int main(int argc, char *argv[]) {
         if (!in_main) { fputs("Error: PRINT() outside BEGIN-END block.\n", stderr); continue; }
         if (strncmp(line, "CONST ", 6) == 0) { handle_const(line); continue; }
         if (strncmp(line, "PRINT(", 6) == 0) { handle_print(line); continue; }
-        if (strncmp(line, "FOR ", 4) == 0) { handle_for(line); continue; }
-        if (strncmp(line, "NEXT ", 5) == 0) { handle_next(line); continue; }
+        if (strncmp(line, "ECHO ", 5) == 0) { handle_echo(line); continue; }
+        if (strncmp(line, "FOR ", 4) == 0) { handle_for(fp, line); continue; }
+        if (strncmp(line, "NEXT", 4) == 0) { continue; }
+        if (strncmp(line, "PROCEDURE ", 10) == 0) { handle_procedure(fp, line); continue; }
+        // If it's a call to a PROCEDURE
+        for (int i = 0; i < proc_count; i++) {
+            if (strcmp(line, procs[i].name) == 0) {
+                execute_procedure(line);
+                break;
+            }
+        }
     }
     fclose(fp);
     free(vars);

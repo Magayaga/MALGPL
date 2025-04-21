@@ -1,0 +1,6 @@
+BEGIN
+    CONST X := 1
+    FOR X TO 5:
+        PRINT($X)
+    NEXT
+END

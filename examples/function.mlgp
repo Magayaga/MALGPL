@@ -1,0 +1,11 @@
+BEGIN
+    CONST A := 10
+    CONST B := 5
+
+    PROCEDURE show_numbers
+        PRINT(A)
+        PRINT(B)
+    END
+
+    show_numbers
+END
