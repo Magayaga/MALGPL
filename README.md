@@ -47,12 +47,6 @@ MALGPL is influenced by the **Fortran**, **C**, **BASIC**, **ALGOL**, and **ML**
 Here’s a simple program to print “Hello, World!” written in MALGPL programming language:
 
 ```basic
-WRITE("Hello, World!")
-```
-
-and 
-
-```basic
 BEGIN
     COMMENT “Hello, World!” program
     WRITE("Hello, World!")
@@ -72,13 +66,6 @@ END
 `COMMENT` can be used to explain MALGPL code, and to make it more readable.
 
 ```basic
-COMMENT This is the comment
-COMMENT "This is the comment!"
-```
-
-and
-
-```basic
 BEGIN
     COMMENT This is the comment
     COMMENT "This is the comment!"
@@ -89,16 +76,6 @@ END
 `WRITENUM` can be numbers and arithmetic expressions and `WRITE` can be messages and texts.
 
 Here’s a simple program to print arithmetic expressions written in MALGPL programming language:
-
-```basic
-WRITENUM(9 + 12)
-WRITENUM(4 - 6)
-WRITENUM(12 * 3)
-WRITENUM(10 / 4)
-WRITENUM(4 ^ 3)
-```
-
-and 
 
 ```basic
 BEGIN
@@ -114,17 +91,6 @@ END
 ### Variables
 
 MALGPL Variables can be a `VAR` keyword that can be changed or modified like numbers and messages.
-
-```basic
-VAR name := "Hello, World!"
-WRITE(\name)
-
-VAR number := 9 + 4
-VAR 6 := 12 + 3
-WRITENUM(\number)
-WRITENUM(\6)
-```
-and
 
 ```basic
 BEGIN
